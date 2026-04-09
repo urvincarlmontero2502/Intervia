@@ -817,62 +817,57 @@ h1 {
 }
 
 @media (max-width: 768px) {
-  /* Force 2 columns with tight spacing */
+  /* 1. Reduce outer padding from 15px to 8px to push cards closer to the screen edges */
   .product-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-    padding: 15px !important;
+    gap: 8px !important; /* Tighter gap between cards */
+    padding: 10px 8px !important; /* Minimal side padding */
   }
 
-  /* Shrink the card padding and make it look compact */
+  /* 2. Compact the card's internal padding so the content (text/image) expands */
   .product-card {
-    padding: 10px !important;
-    border-radius: 16px !important;
+    padding: 8px !important;
+    border-radius: 12px !important; /* Cleaner, flatter edges */
+    width: 100%;
   }
 
-  /* Shrink the image height so two cards fit on the screen */
+  /* 3. Adjust image container to be slightly taller to match the new width */
   .card-img-container {
-    height: 130px !important;
-    margin-bottom: 10px !important;
-    border-radius: 12px !important;
+    height: 145px !important;
+    margin-bottom: 8px !important;
+    border-radius: 8px !important;
   }
 
-  /* Adjust text sizes for small screens */
+  /* 4. Align text for a cleaner, wider feel */
   .card-name {
-    font-size: 15px !important;
+    font-size: 14px !important;
+    line-height: 1.2;
+    height: 34px;
+    margin-bottom: 2px !important;
     text-align: left;
-    height: 36px; /* Limits to 2 lines */
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-
-  .card-seller {
-    font-size: 11px !important;
-    text-align: left;
-    margin: 4px 0 8px !important;
   }
 
   .card-price {
-    font-size: 18px !important;
+    font-size: 17px !important;
+    font-weight: 800;
     text-align: left;
-    display: block;
   }
 
-  /* Make the buy button smaller and more "app-like" */
+  /* 5. Full-width button makes the card feel more substantial */
   .btn-buy {
-    padding: 8px !important;
+    width: 100%;
+    padding: 12px !important; /* Thicker tap target */
     font-size: 12px !important;
-    border-radius: 10px !important;
+    border-radius: 6px !important;
     margin-top: 8px !important;
+    display: flex;
+    justify-content: center;
   }
 
-  /* Position the location tag smaller */
+  /* 6. Shrink location tag to prevent overlap on wider cards */
   .location-tag {
-    font-size: 8px !important;
-    padding: 3px 8px !important;
+    font-size: 9px !important;
+    padding: 2px 6px !important;
     top: 6px !important;
     right: 6px !important;
   }
