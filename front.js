@@ -119,7 +119,9 @@ function loadFrontProducts() {
         <div class="product-card">
             <div class="card-img-container">
                 <img src="${product.img}" alt="${product.name}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=Fresh+Produce'">
-                <div class="location-tag">📍 ${product.location}</div>
+                <div class="location-tag">
+                    <i data-lucide="map-pin" style="width:10px; height:10px;"></i> ${product.location}
+                </div>
             </div>
             <div class="card-name">${product.name}</div>
             <div class="card-seller">By ${product.seller} • <span class="cat-label">${product.cat}</span></div>
@@ -131,6 +133,11 @@ function loadFrontProducts() {
     `,
     )
     .join('')
+
+  // IMPORTANT: You must call this after updating innerHTML to render the icons
+  if (window.lucide) {
+    lucide.createIcons()
+  }
 }
 
 document.addEventListener('DOMContentLoaded', loadFrontProducts)
