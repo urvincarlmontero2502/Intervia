@@ -550,37 +550,26 @@ function renderMyOrders() {
   if (!ordersGrid) return
 
   if (myOrders.length === 0) {
-    ordersGrid.innerHTML = `
-      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-light);">
-        <i data-lucide="package-open" style="width: 48px; height: 48px; margin-bottom: 10px; opacity: 0.5;"></i>
-        <p>You haven't placed any orders yet.</p>
-      </div>`
-    if (window.lucide) lucide.createIcons()
+    ordersGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">No orders yet.</p>`
     return
   }
 
   ordersGrid.innerHTML = myOrders
-    .map((order) => {
-      // Extract numerical price for calculation
-      const priceValue = parseFloat(order.price.replace(/[^0-9.]/g, '')) || 0
-      const total = priceValue * order.selectedQty
-
-      return `
-      <div class="product-card">
-        <div class="card-img-container">
-          <img src="${order.img}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=Product'">
-          <div class="category-tag">Processing</div>
-        </div>
-        <div class="card-content">
-          <div class="card-name">${order.name}</div>
-          <div class="card-seller">Quantity: ${order.selectedQty}</div>
-          <div class="card-footer" style="margin-top: 10px; border-top: 1px solid #f1f5f9; pt: 10px;">
-            <div class="card-price">₱${total.toLocaleString()}</div>
-          </div>
-        </div>
+    .map(
+      (order) => `
+    <div class="product-card">
+      <div class="card-img-container">
+        <img src="${order.img}" class="product-img" onerror="this.src='https://via.placeholder.com/150'">
+        <div class="category-tag">Processing</div>
       </div>
-    `
-    })
+      <div class="card-content">
+        <div class="card-name">${order.name}</div>
+        <div class="card-seller">Qty: ${order.selectedQty}</div>
+        <div class="card-price">₱${(parseFloat(order.price.replace(/[^0-9.]/g, '')) * order.selectedQty).toLocaleString()}</div>
+      </div>
+    </div>
+  `,
+    )
     .join('')
 
   if (window.lucide) lucide.createIcons()

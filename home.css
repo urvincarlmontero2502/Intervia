@@ -326,11 +326,70 @@ body {
 }
 
 /* Ensure the Orders Grid behaves like the Marketplace Grid */
+/* Styling for the cards inside the My Orders 2-column grid */
+#myOrdersGrid .product-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0; /* The Border */
+  border-radius: 12px;
+  overflow: hidden;
+  padding-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* The Subtle Shadow */
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Add a little hover effect to make it feel interactive */
+/* Specifically target the My Orders grid for a 2-column layout */
 #myOrdersGrid {
-  margin-top: 2rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+/* Add border, shadow, and background here */
+#myOrdersGrid .product-card {
+  width: 100%;
+  background: #ffffff; /* Card background must be white */
+  border: 1px solid #e2e8f0; /* The light grey border */
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* The shadow effect */
+  overflow: hidden; /* Keeps the image inside the rounded corners */
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+}
+
+#myOrdersGrid .product-card:hover {
+  transform: translateY(-3px); /* Lift effect on hover */
+}
+
+/* Ensure the image container fills the top correctly */
+#myOrdersGrid .card-img-container {
+  height: 150px;
+  width: 100%;
+  overflow: hidden;
+}
+
+#myOrdersGrid .product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Prevents stretching */
+}
+
+/* Add padding so text doesn't touch the borders */
+#myOrdersGrid .card-name {
+  padding: 10px 12px 2px 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+#myOrdersGrid .card-price {
+  padding: 0 12px 12px 12px;
+  color: #1b4332;
+  font-weight: 700;
 }
 
 .product-card:hover .product-img {
