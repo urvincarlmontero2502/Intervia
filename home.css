@@ -1152,20 +1152,6 @@ body {
 }
 
 /* --- MINIMALIST BASKET DRAWER --- */
-.cart-drawer {
-  position: fixed;
-  right: -400px;
-  top: 0;
-  width: 400px;
-  height: 100%;
-  background: #ffffff;
-  box-shadow: -15px 0 45px rgba(0, 0, 0, 0.05);
-  z-index: 3000;
-  transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  display: flex;
-  flex-direction: column;
-  padding: 0; /* Remove default padding for edge-to-edge header */
-}
 
 /* --- PROFESSIONAL FLAT BASKET HEADER --- */
 .cart-header-flat {
@@ -1306,9 +1292,6 @@ body {
 }
 
 /* --- MODERN CHECKOUT STYLES --- */
-.cart-drawer {
-  background: #fdfdfd; /* Subtle off-white for contrast */
-}
 
 .cart-content {
   flex: 1;
@@ -1825,16 +1808,35 @@ body {
   }
 
   /* Overlay */
+  /* Overlay */
   .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
     display: none;
   }
 
   .sidebar-overlay.active {
     display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 2000;
+  }
+
+  /* Sidebar (mobile behavior) */
+  @media (max-width: 768px) {
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 260px;
+      height: 100%;
+      background: white;
+      z-index: 2005;
+      transition: left 0.3s ease;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
   }
 
   /* Header */

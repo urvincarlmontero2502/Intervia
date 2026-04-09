@@ -233,16 +233,12 @@ function deleteProduct(id) {
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar')
   const overlay = document.getElementById('sidebarOverlay')
+
   sidebar.classList.toggle('active')
   overlay.classList.toggle('active')
-  lucide.createIcons()
-}
 
-// --- INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', () => {
-  displayMarketplace()
-  if (window.lucide) lucide.createIcons()
-})
+  document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : 'auto'
+}
 
 // --- NAVIGATION: SHOW ACCOUNT CENTER ---
 function showAccountCenter() {
