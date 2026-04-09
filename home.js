@@ -617,3 +617,67 @@ document.addEventListener('click', (e) => {
     popup.classList.remove('show')
   }
 })
+
+function filterCategory(category, element) {
+  // 1. Update UI: Remove 'active' class from all chips and add to the clicked one
+  document.querySelectorAll('.filter-chip').forEach((chip) => {
+    chip.classList.remove('active')
+  })
+  element.classList.add('active')
+
+  // 2. Filter the data
+  let filteredProducts
+  if (category === 'All') {
+    filteredProducts = availableProducts
+  } else {
+    // This matches the 'cat' property in your availableProducts array
+    filteredProducts = availableProducts.filter((product) => product.cat === category)
+  }
+
+  // 3. Re-render the grid with the filtered list
+  renderFilteredMarketplace(filteredProducts)
+}
+
+function renderFilteredMarketplace(productsToDisplay) {
+  const grid = document.getElementById('homeProductGrid')
+  if (!grid) return
+
+  if (productsToDisplay.length === 0) {
+    grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No products found in this category.</p>`
+    return
+  }
+
+  grid.innerHTML = productsToDisplay
+    .map((product) => {
+      const displayPrice = product.price.startsWith('₱') ? product.price : `₱${product.price}`
+      const productData = JSON.stringify(product).replace(/"/g, '&quot;')
+
+      return `
+      <div class="product-card">
+          <div class="card-img-container">
+              <img src="${product.img}" alt="${product.name}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=Fresh+Produce'">
+              <div class="location-tag">
+                  <i data-lucide="map-pin" style="width:10px; height:10px;"></i> ${product.location}
+              </div>
+          </div>
+          <div class="card-name">${product.name}</div>
+          <div class="card-seller">By ${product.seller} • <span class="cat-label">${product.cat}</span></div>
+          <div class="card-price">${displayPrice}</div>
+          <button class="btn-buy" onclick="openQtyModal(${productData})">
+              <i data-lucide="shopping-basket"></i> Add to Basket
+          </button>
+      </div>
+    `
+    })
+    .join('')
+
+  if (window.lucide) lucide.createIcons()
+}
+
+function handleSearch() {
+  const query = document.getElementById('mainSearch').value.toLowerCase()
+  const filtered = availableProducts.filter(
+    (p) => p.name.toLowerCase().includes(query) || p.seller.toLowerCase().includes(query),
+  )
+  renderFilteredMarketplace(filtered)
+}

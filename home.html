@@ -104,10 +104,12 @@
           </div>
 
           <div class="filter-bar">
-            <button class="filter-chip active">All</button>
-            <button class="filter-chip">Vegetables</button>
-            <button class="filter-chip">Fruits</button>
-            <button class="filter-chip">Grains</button>
+            <button class="filter-chip active" onclick="filterCategory('All', this)">All</button>
+            <button class="filter-chip" onclick="filterCategory('Vegetable', this)">
+              Vegetables
+            </button>
+            <button class="filter-chip" onclick="filterCategory('Fruit', this)">Fruits</button>
+            <button class="filter-chip" onclick="filterCategory('Spice', this)">Spice</button>
           </div>
 
           <div class="product-grid" id="homeProductGrid"></div>
