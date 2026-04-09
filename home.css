@@ -1904,6 +1904,30 @@ body {
   border-radius: 12px;
 }
 
+/* Specific override for Market Values cards */
+#marketValuesGrid .product-card {
+  background: #ffffff !important;
+  /* Use a slightly darker border for visibility */
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 12px !important;
+  margin-bottom: 10px;
+  padding: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  /* This ensures the shadow doesn't hide the border */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* On Mobile, make the accent border thicker */
+@media (max-width: 768px) {
+  #marketValuesGrid .product-card {
+    border-left: 8px solid !important; /* Thick color bar on the left */
+    border-top: 1.5px solid #cbd5e1 !important;
+    border-right: 1.5px solid #cbd5e1 !important;
+    border-bottom: 1.5px solid #cbd5e1 !important;
+  }
+}
+
 .market-item-header {
   display: flex;
   justify-content: space-between;
@@ -2183,7 +2207,11 @@ body {
     height: 24px !important;
     color: #475569;
   }
+}
 
+/* --- MOBILE OPTIMIZATION FOR MARKET VALUES --- */
+@media (max-width: 768px) {
+  /* 1. Stack cards in 1 column or 2 tight columns */
   #marketValuesGrid {
     grid-template-columns: 1fr !important; /* Stacked is usually better for prices */
     gap: 12px !important;

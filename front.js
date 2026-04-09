@@ -343,3 +343,105 @@ function handlePostHarvest(event) {
     alert('Harvest listed successfully!')
   }, 1200)
 }
+
+function renderProducts() {
+  const grid = document.getElementById('marketplace-grid')
+  if (!grid) return
+
+  grid.innerHTML = availableProducts
+    .map((product) => {
+      // Escape the name so single quotes don't break the HTML
+      const escapedName = product.name.replace(/'/g, "\\'")
+      const productData = JSON.stringify(product).replace(/"/g, '&quot;')
+
+      return `
+      <div class="product-card">
+        <div class="card-img-container"
+             onclick="inspectImage('${product.img}', '${escapedName}')"
+             style="cursor: zoom-in;">
+          <img src="${product.img}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=Fresh+Harvest'">
+          <div class="category-tag">${product.cat}</div>
+        </div>
+
+        <div class="card-content">
+          <div class="card-name">${product.name}</div>
+          <div class="card-seller">
+            <i data-lucide="user" style="width:12px; height:12px; display:inline-block;"></i>
+            ${product.seller} • ${product.location}
+          </div>
+          <div class="card-price">${product.price}</div>
+
+          <button class="btn-buy" onclick="openQtyModal(${productData})">
+            <i data-lucide="shopping-basket"></i> Add to Basket
+          </button>
+        </div>
+      </div>
+    `
+    })
+    .join('')
+
+  if (window.lucide) lucide.createIcons()
+}
+
+// PHOTO INSPECT FUNCTIONS
+function inspectImage(imgSrc, productName) {
+  const lightbox = document.getElementById('imageLightbox')
+  const img = document.getElementById('inspectedImage')
+  const caption = document.getElementById('lightboxCaption')
+
+  if (!lightbox || !img) return
+
+  img.src = imgSrc
+  caption.innerText = productName
+
+  lightbox.style.display = 'flex'
+  document.body.style.overflow = 'hidden'
+}
+
+function closeLightbox(event) {
+  // Only close if clicking the overlay background (not the image)
+  if (event && event.target !== event.currentTarget) {
+    // Clicked on the image or caption - don't close
+    if (event.target.id === 'inspectedImage' || event.target.id === 'lightboxCaption') {
+      return
+    }
+  }
+
+  const lightbox = document.getElementById('imageLightbox')
+  if (lightbox) {
+    lightbox.style.display = 'none'
+    document.body.style.overflow = 'auto'
+  }
+}
+
+function loadFrontProducts() {
+  const grid = document.getElementById('featured-grid')
+  if (!grid) return
+
+  grid.innerHTML = availableProducts
+    .map((product) => {
+      const escapedName = product.name.replace(/'/g, "\\'")
+
+      return `
+        <div class="product-card">
+            <div class="card-img-container"
+                 onclick="inspectImage('${product.img}', '${escapedName}')"
+                 style="cursor: zoom-in;">
+                <img src="${product.img}" alt="${product.name}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=Fresh+Produce'">
+                <div class="location-tag">
+                    <i data-lucide="map-pin" style="width:10px; height:10px;"></i> ${product.location}
+                </div>
+            </div>
+            <div class="card-name">${product.name}</div>
+            <div class="card-seller">By ${product.seller} • <span class="cat-label">${product.cat}</span></div>
+            <div class="card-price">${product.price}</div>
+            <button class="btn-buy" onclick="openModal('loginModal')">
+                Order Fresh
+            </button>
+        </div>
+    `
+    })
+    .join('')
+
+  if (window.lucide) lucide.createIcons()
+}

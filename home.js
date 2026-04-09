@@ -91,13 +91,14 @@ function displayMarketplace() {
   grid.innerHTML = availableProducts
     .map((product) => {
       const displayPrice = product.price.startsWith('₱') ? product.price : `₱${product.price}`
-
-      // Escape the product object to pass it safely as a string
       const productData = JSON.stringify(product).replace(/"/g, '&quot;')
+      const escapedName = product.name.replace(/'/g, "\\'") // ADD THIS
 
       return `
         <div class="product-card">
-            <div class="card-img-container">
+            <div class="card-img-container"
+                 onclick="inspectImage('${product.img}', '${escapedName}')"
+                 style="cursor: zoom-in;">   <!-- ADD THIS -->
                 <img src="${product.img}" alt="${product.name}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=Fresh+Produce'">
                 <div class="location-tag">
                     <i data-lucide="map-pin" style="width:10px; height:10px;"></i> ${product.location}
@@ -166,28 +167,185 @@ function handlePostHarvest(event) {
 }
 
 // --- NAVIGATION ---
+// 3. UPDATED NAVIGATION (To prevent "My Orders" or "Lightbox" appearing everywhere)
 function showMarketplace() {
+  // Hide every other major section
+  document.getElementById('myOrdersSection').style.display = 'none'
   document.getElementById('myshopSection').style.display = 'none'
   document.getElementById('accountCenter').style.display = 'none'
+  document.getElementById('marketValuesSection').style.display = 'none' // Added Fix
+
+  // Also ensure the lightbox is closed when switching tabs
+  closeLightbox()
+
   document.getElementById('marketplaceSection').style.display = 'block'
 
+  // Sidebar active state
   document.querySelectorAll('.menu-item').forEach((item) => item.classList.remove('active'))
   document.getElementById('nav-marketplace').classList.add('active')
 
-  displayMarketplace()
+  renderProducts()
+}
+
+function updateSidebarActive(activeId) {
+  document.querySelectorAll('.menu-item').forEach((item) => item.classList.remove('active'))
+  const activeItem = document.getElementById(activeId)
+  if (activeItem) activeItem.classList.add('active')
+
+  // Auto-close sidebar on mobile after clicking
+  if (window.innerWidth < 768) toggleSidebar()
 }
 
 function showMyShop() {
+  // Hide everything else
   document.getElementById('marketplaceSection').style.display = 'none'
+  document.getElementById('myOrdersSection').style.display = 'none'
   document.getElementById('accountCenter').style.display = 'none'
+  document.getElementById('marketValuesSection').style.display = 'none' // Added Fix
+
   const shopSection = document.getElementById('myshopSection')
-  if (shopSection) shopSection.style.display = 'block'
+  shopSection.style.display = 'block'
 
+  // Update Sidebar UI
   document.querySelectorAll('.menu-item').forEach((item) => item.classList.remove('active'))
-  const navBtn = document.getElementById('nav-myshop')
-  if (navBtn) navBtn.classList.add('active')
+  document.getElementById('nav-myshop').classList.add('active')
 
+  // Load the data
   renderMyShop()
+}
+
+function deleteProduct(productId) {
+  // Confirm with the user first
+  if (confirm('Are you sure you want to remove this listing?')) {
+    // Find the index of the product in your availableProducts array
+    const productIndex = availableProducts.findIndex((p) => p.id === productId)
+
+    if (productIndex !== -1) {
+      // Remove it from the array
+      availableProducts.splice(productIndex, 1)
+
+      // Refresh the My Shop display
+      renderMyShop()
+
+      // Also refresh the Marketplace so it's gone from there too
+      if (typeof loadMarketplaceProducts === 'function') {
+        loadMarketplaceProducts()
+      }
+
+      alert('Listing removed successfully.')
+    }
+  }
+}
+
+function editProduct(productId) {
+  // 1. Find the product data
+  const product = availableProducts.find((p) => p.id === productId)
+  if (!product) return
+
+  // 2. Open the modal (using your existing modal function)
+  openModal('postModal')
+
+  // 3. Fill the form with current values
+  // Ensure these IDs match your actual <input> IDs in the HTML
+  document.getElementById('itemName').value = product.name
+  document.getElementById('itemCategory').value = product.cat
+  // Strip '₱' if it exists to keep the number input clean
+  document.getElementById('itemPrice').value = product.price.replace('₱', '')
+
+  // 4. Change the Modal UI to "Edit Mode"
+  const modalTitle = document.querySelector('#postModal h2')
+  if (modalTitle) modalTitle.innerText = 'Update Harvest'
+
+  const submitBtn = document.getElementById('submitProductBtn')
+  if (submitBtn) {
+    submitBtn.innerText = 'Save Changes'
+    // Change the function it calls when clicked
+    submitBtn.onclick = function () {
+      saveEdit(productId)
+    }
+  }
+}
+
+let currentEditId = null // Variable to keep track of what we are editing
+
+function editProduct(productId) {
+  // 1. Find the product
+  const product = availableProducts.find((p) => p.id === productId)
+  if (!product) return
+
+  currentEditId = productId // Save the ID for the save function
+
+  // 2. Open the Modal
+  document.getElementById('postModal').style.display = 'flex'
+
+  // 3. Fill the inputs using your specific IDs
+  document.getElementById('post-name').value = product.name
+  document.getElementById('post-price').value = product.price
+  document.getElementById('post-cat').value = product.cat
+
+  // 4. Change UI text to "Update" instead of "Post"
+  document.querySelector('.modal-title').innerText = 'Update Listing'
+  const submitBtn = document.querySelector('#postHarvestForm button[type="submit"]')
+  submitBtn.innerText = 'Save Changes'
+
+  // 5. Change the form behavior to "Save" instead of "Create"
+  const form = document.getElementById('postHarvestForm')
+  form.onsubmit = function (e) {
+    e.preventDefault()
+    saveProductEdit()
+  }
+}
+
+function resetPostModal() {
+  const modalTitle = document.querySelector('#postModal h2')
+  if (modalTitle) modalTitle.innerText = 'Post Harvest'
+
+  const submitBtn = document.getElementById('submitProductBtn')
+  if (submitBtn) {
+    submitBtn.innerText = 'Post Product'
+    submitBtn.onclick = handleNewPost // Point back to your original post function
+  }
+}
+
+function saveProductEdit() {
+  const index = availableProducts.findIndex((p) => p.id === currentEditId)
+
+  if (index !== -1) {
+    // Update the array with new values
+    availableProducts[index].name = document.getElementById('post-name').value
+    availableProducts[index].price = document.getElementById('post-price').value
+    availableProducts[index].cat = document.getElementById('post-cat').value
+
+    // Close and Refresh
+    closePostModal()
+    renderMyShop()
+
+    // Reset form for next use
+    resetPostForm()
+    alert('Listing updated!')
+  }
+}
+
+// Helper to switch the modal back to "Post New Harvest" mode
+function resetPostForm() {
+  const form = document.getElementById('postHarvestForm')
+  form.reset()
+  form.onsubmit = handlePostHarvest // Point back to your original create function
+  document.querySelector('.modal-title').innerText = 'Post New Harvest'
+  document.querySelector('#postHarvestForm button[type="submit"]').innerText = 'Post Product'
+  currentEditId = null
+}
+
+// Reset function to turn the modal back into a "New Post" form
+function resetPostModal() {
+  const modalTitle = document.querySelector('#postModal h2')
+  if (modalTitle) modalTitle.innerText = 'Post Harvest'
+
+  const submitBtn = document.getElementById('submitProductBtn')
+  if (submitBtn) {
+    submitBtn.innerText = 'Post Product'
+    submitBtn.onclick = handleNewPost // Point back to your original post function
+  }
 }
 
 function renderMyShop() {
@@ -195,7 +353,7 @@ function renderMyShop() {
   const myProducts = availableProducts.filter((p) => p.seller === 'Juan2026')
 
   if (myProducts.length === 0) {
-    shopGrid.innerHTML = `<p>You haven't posted any harvests yet.</p>`
+    shopGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 20px;">You haven't posted any harvests yet.</p>`
     return
   }
 
@@ -210,7 +368,7 @@ function renderMyShop() {
       <div class="card-name">${product.name}</div>
       <div class="card-price">${product.price}</div>
       <div class="shop-actions">
-        <button class="btn-edit">Edit</button>
+        <button class="btn-edit" onclick="editProduct(${product.id})">Edit</button>
         <button class="btn-delete" onclick="deleteProduct(${product.id})">Remove</button>
       </div>
     </div>
@@ -242,31 +400,17 @@ function toggleSidebar() {
 
 // --- NAVIGATION: SHOW ACCOUNT CENTER ---
 function showAccountCenter() {
-  // 1. Hide other sections
-  const marketplace = document.getElementById('marketplaceSection')
-  const myShop = document.getElementById('myshopSection')
-  const account = document.getElementById('accountCenter')
+  // Hide ALL other sections
+  document.getElementById('marketplaceSection').style.display = 'none'
+  document.getElementById('myOrdersSection').style.display = 'none'
+  document.getElementById('myshopSection').style.display = 'none'
+  document.getElementById('marketValuesSection').style.display = 'none'
 
-  if (marketplace) marketplace.style.display = 'none'
-  if (myShop) myShop.style.display = 'none'
+  // Show Account Center
+  document.getElementById('accountCenter').style.display = 'block'
 
-  // 2. Show Account Center
-  if (account) account.style.display = 'block'
-
-  // 3. Update Sidebar Active State
-  document.querySelectorAll('.menu-item').forEach((item) => {
-    item.classList.remove('active')
-  })
-
-  // If your account link in the sidebar has id="nav-account"
-  const accBtn = document.getElementById('nav-account')
-  if (accBtn) accBtn.classList.add('active')
-
-  // Refresh icons
-  if (window.lucide) lucide.createIcons()
-
-  // Scroll to top for a better user experience
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  // Update sidebar active state
+  document.querySelectorAll('.menu-item').forEach((item) => item.classList.remove('active'))
 }
 
 // --- LOGOUT LOGIC ---
@@ -525,11 +669,13 @@ function processCheckout() {
     }
   }
 }
+
 function showMyOrders() {
   // Hide other sections
   document.getElementById('marketplaceSection').style.display = 'none'
   document.getElementById('myshopSection').style.display = 'none'
   document.getElementById('accountCenter').style.display = 'none'
+  document.getElementById('marketValuesSection').style.display = 'none' // Added Fix
 
   // Show My Orders section
   document.getElementById('myOrdersSection').style.display = 'block'
@@ -546,26 +692,78 @@ function renderMyOrders() {
   if (!ordersGrid) return
 
   if (myOrders.length === 0) {
-    ordersGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">No orders yet.</p>`
+    ordersGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-light);">You haven't placed any orders yet.</p>`
     return
   }
 
   ordersGrid.innerHTML = myOrders
-    .map(
-      (order) => `
+    .map((order) => {
+      // 1. Calculate the total price for this order
+      const numericPrice = parseFloat(order.price.replace(/[^0-9.]/g, '')) || 0
+      const totalPrice = (numericPrice * order.selectedQty).toLocaleString()
+
+      // 2. Escape the name for the lightbox
+      const escapedName = order.name.replace(/'/g, "\\'")
+
+      return `
     <div class="product-card">
-      <div class="card-img-container">
-        <img src="${order.img}" class="product-img" onerror="this.src='https://via.placeholder.com/150'">
-        <div class="category-tag">Processing</div>
+      <div class="card-img-container"
+           onclick="inspectImage('${order.img}', '${escapedName}')"
+           style="cursor: zoom-in;">
+        <img src="${order.img}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=Harvest'">
+        <div class="status-tag" style="background: var(--accent)">Processing</div>
       </div>
       <div class="card-content">
         <div class="card-name">${order.name}</div>
-        <div class="card-seller">Qty: ${order.selectedQty}</div>
-        <div class="card-price">₱${(parseFloat(order.price.replace(/[^0-9.]/g, '')) * order.selectedQty).toLocaleString()}</div>
+        <div class="card-seller">Quantity: <b>${order.selectedQty}</b></div>
+        <div class="card-price">₱${totalPrice}</div>
+
+        <button class="btn-buy" style="margin-top: 10px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;">
+          Track Order
+        </button>
       </div>
     </div>
-  `,
-    )
+  `
+    })
+    .join('')
+
+  if (window.lucide) lucide.createIcons()
+}
+
+function renderProducts() {
+  const grid = document.getElementById('marketplace-grid')
+  if (!grid) return
+
+  grid.innerHTML = availableProducts
+    .map((product) => {
+      // Escape the name so single quotes don't break the HTML
+      const escapedName = product.name.replace(/'/g, "\\'")
+      const productData = JSON.stringify(product).replace(/"/g, '&quot;')
+
+      return `
+      <div class="product-card">
+        <div class="card-img-container"
+             onclick="inspectImage('${product.img}', '${escapedName}')"
+             style="cursor: zoom-in;">
+          <img src="${product.img}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=Fresh+Harvest'">
+          <div class="category-tag">${product.cat}</div>
+        </div>
+
+        <div class="card-content">
+          <div class="card-name">${product.name}</div>
+          <div class="card-seller">
+            <i data-lucide="user" style="width:12px; height:12px; display:inline-block;"></i>
+            ${product.seller} • ${product.location}
+          </div>
+          <div class="card-price">${product.price}</div>
+
+          <button class="btn-buy" onclick="openQtyModal(${productData})">
+            <i data-lucide="shopping-basket"></i> Add to Basket
+          </button>
+        </div>
+      </div>
+    `
+    })
     .join('')
 
   if (window.lucide) lucide.createIcons()
@@ -647,10 +845,13 @@ function renderFilteredMarketplace(productsToDisplay) {
     .map((product) => {
       const displayPrice = product.price.startsWith('₱') ? product.price : `₱${product.price}`
       const productData = JSON.stringify(product).replace(/"/g, '&quot;')
+      const escapedName = product.name.replace(/'/g, "\\'") // ADD THIS
 
       return `
       <div class="product-card">
-          <div class="card-img-container">
+          <div class="card-img-container"
+               onclick="inspectImage('${product.img}', '${escapedName}')"
+               style="cursor: zoom-in;">   <!-- ADD THIS -->
               <img src="${product.img}" alt="${product.name}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=Fresh+Produce'">
               <div class="location-tag">
                   <i data-lucide="map-pin" style="width:10px; height:10px;"></i> ${product.location}
@@ -676,4 +877,253 @@ function handleSearch() {
     (p) => p.name.toLowerCase().includes(query) || p.seller.toLowerCase().includes(query),
   )
   renderFilteredMarketplace(filtered)
+}
+
+function previewImage(event) {
+  const reader = new FileReader()
+  const accountImage = document.getElementById('userProfileImage')
+  const sidebarImage = document.getElementById('sidebarAvatar') // New Target
+  const defaultIcon = document.getElementById('defaultUserIcon')
+
+  reader.onload = function () {
+    if (reader.readyState === 2) {
+      const newSrc = reader.result
+
+      // Update Account Center photo
+      if (accountImage) {
+        accountImage.src = newSrc
+        accountImage.style.display = 'block'
+      }
+
+      // Update Sidebar footer photo
+      if (sidebarImage) {
+        sidebarImage.src = newSrc
+      }
+
+      // Hide icon if it was showing
+      if (defaultIcon) defaultIcon.style.display = 'none'
+    }
+  }
+
+  if (event.target.files[0]) {
+    reader.readAsDataURL(event.target.files[0])
+  }
+}
+
+function inspectImage(imgSrc, productName) {
+  const lightbox = document.getElementById('imageLightbox')
+  const fullImg = document.getElementById('inspectedImage')
+  const caption = document.getElementById('lightboxCaption')
+
+  if (!lightbox || !fullImg) return
+
+  fullImg.src = imgSrc
+  // Use innerHTML in case you want to style the name later
+  caption.innerHTML = `<b>${productName}</b>`
+
+  lightbox.style.display = 'flex'
+  document.body.style.overflow = 'hidden'
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById('imageLightbox')
+  if (lightbox) {
+    lightbox.style.display = 'none'
+    document.body.style.overflow = 'auto'
+  }
+}
+
+function previewImage(event) {
+  const reader = new FileReader()
+  const accountImage = document.getElementById('userProfileImage')
+  const sidebarImage = document.getElementById('sidebarAvatar') // Target the sidebar img
+  const defaultIcon = document.getElementById('defaultUserIcon')
+
+  reader.onload = function () {
+    if (reader.readyState === 2) {
+      const newSrc = reader.result
+
+      // 1. Update the Account Center main photo
+      if (accountImage) {
+        accountImage.src = newSrc
+        accountImage.style.display = 'block'
+      }
+
+      // 2. Update the Sidebar avatar photo
+      if (sidebarImage) {
+        sidebarImage.src = newSrc
+      }
+
+      // 3. Hide default icon if present
+      if (defaultIcon) defaultIcon.style.display = 'none'
+    }
+  }
+
+  if (event.target.files[0]) {
+    reader.readAsDataURL(event.target.files[0])
+  }
+}
+
+const localMarketData = [
+  // ROOT CROPS & SPICES
+  {
+    item: 'Native Ginger',
+    price: '₱115',
+    unit: 'per kg',
+    status: 'Rising',
+    icon: 'trending-up',
+    color: '#e11d48',
+  },
+  {
+    item: 'Red Onions',
+    price: '₱170',
+    unit: 'per kg',
+    status: 'Falling',
+    icon: 'trending-down',
+    color: '#16a34a',
+  },
+  {
+    item: 'Sweet Potato (Kamote)',
+    price: '₱75',
+    unit: 'per kg',
+    status: 'Rising',
+    icon: 'trending-up',
+    color: '#e11d48',
+  },
+  {
+    item: 'Garlic (Ahos)',
+    price: '₱140',
+    unit: 'per kg',
+    status: 'Stable',
+    icon: 'minus',
+    color: '#64748b',
+  },
+
+  // FRUITS & REBENTADOR
+  {
+    item: 'Saba Banana',
+    price: '₱45',
+    unit: 'per bundle',
+    status: 'Stable',
+    icon: 'minus',
+    color: '#64748b',
+  },
+  {
+    item: 'Carabao Mango',
+    price: '₱120',
+    unit: 'per kg',
+    status: 'Falling',
+    icon: 'trending-down',
+    color: '#16a34a',
+  },
+  {
+    item: 'Calamansi',
+    price: '₱85',
+    unit: 'per kg',
+    status: 'Rising',
+    icon: 'trending-up',
+    color: '#e11d48',
+  },
+
+  // VEGETABLES
+  {
+    item: 'Eggplant (Talong)',
+    price: '₱60',
+    unit: 'per kg',
+    status: 'Stable',
+    icon: 'minus',
+    color: '#64748b',
+  },
+  {
+    item: 'Ampalaya',
+    price: '₱95',
+    unit: 'per kg',
+    status: 'Rising',
+    icon: 'trending-up',
+    color: '#e11d48',
+  },
+  {
+    item: 'String Beans (Batong)',
+    price: '₱35',
+    unit: 'per bundle',
+    status: 'Falling',
+    icon: 'trending-down',
+    color: '#16a34a',
+  },
+  {
+    item: 'Pechay',
+    price: '₱25',
+    unit: 'per tie',
+    status: 'Stable',
+    icon: 'minus',
+    color: '#64748b',
+  },
+
+  // STAPLES
+  {
+    item: 'Local Rice (Ganador)',
+    price: '₱54',
+    unit: 'per kg',
+    status: 'Stable',
+    icon: 'minus',
+    color: '#64748b',
+  },
+  {
+    item: 'Local Rice (V16)',
+    price: '₱48',
+    unit: 'per kg',
+    status: 'Stable',
+    icon: 'minus',
+    color: '#64748b',
+  },
+]
+
+function showMarketValues() {
+  // Hide everything else
+  document.getElementById('marketplaceSection').style.display = 'none'
+  document.getElementById('myOrdersSection').style.display = 'none'
+  document.getElementById('accountCenter').style.display = 'none'
+  document.getElementById('myshopSection').style.display = 'none' // FIX: Hide My Shop
+
+  // Show Market Values
+  document.getElementById('marketValuesSection').style.display = 'block'
+
+  // Update Sidebar UI
+  document.querySelectorAll('.menu-item').forEach((item) => item.classList.remove('active'))
+
+  const navBtn = document.getElementById('nav-marketvalues')
+  if (navBtn) navBtn.classList.add('active')
+
+  renderMarketValues()
+}
+
+function renderMarketValues() {
+  const grid = document.getElementById('marketValuesGrid')
+  if (!grid) return
+
+  grid.innerHTML = localMarketData
+    .map(
+      (data) => `
+    <div class="product-card" style="border-left-color: ${data.color} !important;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span style="font-size: 0.7rem; color: #64748b; font-weight: bold; text-transform: uppercase;">Product</span>
+          <h2 style="font-size: 1.1rem; margin: 0; color: #1e293b;">${data.item}</h2>
+        </div>
+        <div style="text-align: right;">
+          <span style="font-size: 1.4rem; font-weight: 800; color: #166534;">${data.price}</span>
+          <span style="font-size: 0.8rem; color: #64748b; display: block;">${data.unit}</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid #f1f5f9; display: flex; align-items: center; gap: 5px; color: ${data.color}; font-size: 0.8rem; font-weight: bold;">
+        <i data-lucide="${data.icon}" style="width: 14px;"></i>
+        ${data.status.toUpperCase()}
+      </div>
+    </div>
+  `,
+    )
+    .join('')
+
+  if (window.lucide) lucide.createIcons()
 }

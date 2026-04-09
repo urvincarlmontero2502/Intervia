@@ -12,6 +12,12 @@
     <link rel="stylesheet" href="front.css" />
   </head>
   <body>
+    <div id="imageLightbox" class="lightbox-overlay" onclick="closeLightbox(event)">
+      <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+      <img class="lightbox-content" id="inspectedImage" onclick="event.stopPropagation()" />
+      <div id="lightboxCaption" onclick="event.stopPropagation()"></div>
+    </div>
+
     <nav class="navbar">
       <a href="#" class="logo">Intervia</a>
 

@@ -40,12 +40,28 @@
         <a href="#" id="nav-myshop" class="menu-item" onclick="showMyShop()">
           <i data-lucide="store"></i> My Shop
         </a>
+
+        <a href="#" id="nav-marketvalues" class="menu-item" onclick="showMarketValues()">
+          <i data-lucide="trending-up"></i> Market Prices
+        </a>
       </nav>
 
       <div class="sidebar-footer">
         <div class="user-info" style="cursor: pointer" onclick="showAccountCenter()">
           <div class="nav-avatar-container">
-            <i data-lucide="user" class="user-figure-icon"></i>
+            <img
+              src="images/farmer.jpg"
+              id="sidebarAvatar"
+              class="user-figure-icon"
+              alt="User"
+              style="
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
+                display: block;
+              "
+            />
           </div>
           <div>
             <p class="nav-username">Juan2026</p>
@@ -131,15 +147,42 @@
             <div class="settings-header">
               <div class="profile-large">
                 <div class="profile-figure-circle">
-                  <i data-lucide="user" class="large-user-icon"></i>
+                  <img
+                    id="userProfileImage"
+                    src="images/farmer.jpg"
+                    onerror="
+                      this.style.display = 'none'
+                      document.getElementById('defaultUserIcon').style.display = 'block'
+                    "
+                    alt="Profile"
+                  />
+                  <i
+                    data-lucide="user"
+                    id="defaultUserIcon"
+                    class="large-user-icon"
+                    style="display: none"
+                  ></i>
                 </div>
-                <button class="change-photo-btn">
+
+                <input
+                  type="file"
+                  id="imageUpload"
+                  accept="image/*"
+                  style="display: none"
+                  onchange="previewImage(event)"
+                />
+
+                <button
+                  class="change-photo-btn"
+                  onclick="document.getElementById('imageUpload').click()"
+                  type="button"
+                >
                   <i data-lucide="camera" style="width: 16px"></i>
                 </button>
               </div>
               <div class="profile-meta">
                 <h2>Juan2026</h2>
-                <span class="badge-verified">Verified Seller • Jabonga</span>
+                <span class="badge-verified">Verified Seller</span>
               </div>
             </div>
 
@@ -181,6 +224,15 @@
 
           <div id="myOrdersGrid" class="products-grid"></div>
         </div>
+      </section>
+
+      <section id="marketValuesSection" style="display: none">
+        <div class="welcome-banner">
+          <h1>Current Market Values 📊</h1>
+          <p>Daily price monitoring for Jabonga & Kitcharao districts.</p>
+        </div>
+
+        <div id="marketValuesGrid" class="product-grid"></div>
       </section>
     </main>
 
@@ -356,6 +408,12 @@
 
         <button type="button" class="btn-signup" id="confirmAddBtn">Confirm Add</button>
       </div>
+    </div>
+
+    <div id="imageLightbox" class="lightbox-overlay" onclick="closeLightbox()">
+      <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+      <img class="lightbox-content" id="inspectedImage" />
+      <div id="lightboxCaption"></div>
     </div>
 
     <script src="home.js"></script>
