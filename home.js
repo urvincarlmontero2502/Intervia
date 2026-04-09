@@ -392,3 +392,59 @@ function addToBasket(id) {
     toggleCart() // Automatically show the cart when an item is added
   }
 }
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar')
+  const overlay = document.getElementById('sidebarOverlay')
+
+  sidebar.classList.toggle('active')
+  overlay.classList.toggle('active')
+
+  // re-render icons inside sidebar (including X)
+  lucide.createIcons()
+}
+
+document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar)
+
+// Re-run icons to make sure the menu icon appears
+if (window.lucide) {
+  lucide.createIcons()
+}
+
+// CRITICAL: This ensures the menu icon actually appears
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.lucide) {
+    lucide.createIcons()
+  }
+})
+
+// Close menu automatically when clicking a link (optional)
+document.querySelectorAll('.menu-item').forEach((link) => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 768) toggleSidebar()
+  })
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('sidebarOverlay')
+
+  if (overlay) {
+    overlay.addEventListener('click', toggleSidebar)
+  }
+})
+
+lucide.createIcons()
+
+function previewImage(event) {
+  const file = event.target.files[0]
+  const preview = document.getElementById('post-img-preview')
+
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = function (e) {
+      preview.src = e.target.result
+      preview.style.display = 'block'
+    }
+    reader.readAsDataURL(file)
+  }
+}

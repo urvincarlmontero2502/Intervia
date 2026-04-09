@@ -815,3 +815,65 @@ h1 {
   margin-bottom: 8px;
   color: var(--text-main);
 }
+
+@media (max-width: 768px) {
+  /* Force 2 columns with tight spacing */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    padding: 15px !important;
+  }
+
+  /* Shrink the card padding and make it look compact */
+  .product-card {
+    padding: 10px !important;
+    border-radius: 16px !important;
+  }
+
+  /* Shrink the image height so two cards fit on the screen */
+  .card-img-container {
+    height: 130px !important;
+    margin-bottom: 10px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Adjust text sizes for small screens */
+  .card-name {
+    font-size: 15px !important;
+    text-align: left;
+    height: 36px; /* Limits to 2 lines */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .card-seller {
+    font-size: 11px !important;
+    text-align: left;
+    margin: 4px 0 8px !important;
+  }
+
+  .card-price {
+    font-size: 18px !important;
+    text-align: left;
+    display: block;
+  }
+
+  /* Make the buy button smaller and more "app-like" */
+  .btn-buy {
+    padding: 8px !important;
+    font-size: 12px !important;
+    border-radius: 10px !important;
+    margin-top: 8px !important;
+  }
+
+  /* Position the location tag smaller */
+  .location-tag {
+    font-size: 8px !important;
+    padding: 3px 8px !important;
+    top: 6px !important;
+    right: 6px !important;
+  }
+}

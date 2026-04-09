@@ -12,9 +12,14 @@
     <link rel="stylesheet" href="home.css" />
   </head>
   <body>
-    <aside class="sidebar">
-      <div class="sidebar-header">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header" style="position: relative">
         <a href="home.html" class="logo">Intervia</a>
+
+        <!-- CLOSE BUTTON -->
+        <button class="close-sidebar-btn" onclick="toggleSidebar()">
+          <i data-lucide="x"></i>
+        </button>
       </div>
 
       <nav class="sidebar-menu">
@@ -50,21 +55,24 @@
       </div>
     </aside>
 
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
     <main class="main-wrapper">
       <header class="home-header">
+        <button class="mobile-burger-trigger" onclick="toggleSidebar()">
+          <i data-lucide="menu"></i>
+        </button>
+
         <div class="search-container">
           <i data-lucide="search"></i>
-          <input
-            type="text"
-            placeholder="Search vegetables, fruits, or sellers in Agusan del Norte..."
-          />
+          <input type="text" placeholder="Search vegetables..." />
         </div>
+
         <div class="header-actions">
           <button class="icon-btn cart-btn" onclick="toggleCart()">
             <i data-lucide="shopping-cart"></i>
             <span id="cart-badge" class="cart-badge">0</span>
           </button>
-
           <button class="icon-btn"><i data-lucide="message-square"></i></button>
         </div>
       </header>
@@ -177,18 +185,20 @@
 
           <div class="input-group">
             <label>Product Photo</label>
-            <div class="file-upload-wrapper">
+            <div
+              class="photo-upload-box"
+              onclick="document.getElementById('post-img-file').click()"
+            >
+              <i data-lucide="camera"></i>
+              <span>Add Photo</span>
               <input
                 type="file"
                 id="post-img-file"
                 accept="image/*"
+                style="display: none"
                 onchange="previewImage(event)"
-                required
               />
-              <div class="upload-placeholder" id="upload-preview">
-                <i data-lucide="camera"></i>
-                <span>Click to upload photo</span>
-              </div>
+              <img id="post-img-preview" class="upload-preview-img" />
             </div>
           </div>
 
