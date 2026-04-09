@@ -817,58 +817,65 @@ h1 {
 }
 
 @media (max-width: 768px) {
-  /* 1. Reduce outer padding from 15px to 8px to push cards closer to the screen edges */
+  /* 1. Maximize Grid Width: Reclaim almost all side space */
   .product-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important; /* Tighter gap between cards */
-    padding: 10px 8px !important; /* Minimal side padding */
+    gap: 10px !important; /* Balanced gap for larger cards */
+    padding: 10px 5px !important; /* Only 5px on the sides for an edge-to-edge feel */
   }
 
-  /* 2. Compact the card's internal padding so the content (text/image) expands */
+  /* 2. Expand Card: Reduce internal padding to push content outward */
   .product-card {
-    padding: 8px !important;
-    border-radius: 12px !important; /* Cleaner, flatter edges */
+    padding: 6px !important; /* Minimal padding inside the card */
+    border-radius: 8px !important; /* Sharper edges match the professional flat look */
     width: 100%;
   }
 
-  /* 3. Adjust image container to be slightly taller to match the new width */
+  /* 3. Larger Hero Images: Increased height to dominate the card */
   .card-img-container {
-    height: 145px !important;
+    height: 160px !important; /* Significant height increase for "Large" feel */
     margin-bottom: 8px !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
   }
 
-  /* 4. Align text for a cleaner, wider feel */
+  /* 4. Typography: Slightly larger prices to match the bigger scale */
   .card-name {
-    font-size: 14px !important;
+    font-size: 15px !important;
     line-height: 1.2;
-    height: 34px;
-    margin-bottom: 2px !important;
-    text-align: left;
+    height: 36px;
+    margin: 4px 0 !important;
+    font-weight: 700;
   }
 
   .card-price {
-    font-size: 17px !important;
-    font-weight: 800;
-    text-align: left;
+    font-size: 18px !important; /* Bolder, larger price */
+    font-weight: 900;
+    color: var(--primary);
   }
 
-  /* 5. Full-width button makes the card feel more substantial */
+  .card-seller {
+    font-size: 12px !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* 5. Professional Button: Full width with more height */
   .btn-buy {
     width: 100%;
-    padding: 12px !important; /* Thicker tap target */
-    font-size: 12px !important;
-    border-radius: 6px !important;
-    margin-top: 8px !important;
-    display: flex;
-    justify-content: center;
+    padding: 14px !important; /* Larger touch area for a premium app feel */
+    font-size: 13px !important;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    border-radius: 4px !important;
+    margin-top: 5px !important;
+    text-transform: uppercase;
   }
 
-  /* 6. Shrink location tag to prevent overlap on wider cards */
+  /* 6. Refined Location Tag */
   .location-tag {
     font-size: 9px !important;
-    padding: 2px 6px !important;
-    top: 6px !important;
-    right: 6px !important;
+    padding: 3px 8px !important;
+    top: 8px !important;
+    right: 8px !important;
+    border-radius: 3px !important;
   }
 }
