@@ -109,36 +109,7 @@ const availableProducts = [
   },
 ]
 
-function loadFrontProducts() {
-  const grid = document.getElementById('featured-grid')
-  if (!grid) return
-
-  grid.innerHTML = availableProducts
-    .map(
-      (product) => `
-        <div class="product-card">
-            <div class="card-img-container">
-                <img src="${product.img}" alt="${product.name}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=Fresh+Produce'">
-                <div class="location-tag">
-                    <i data-lucide="map-pin" style="width:10px; height:10px;"></i> ${product.location}
-                </div>
-            </div>
-            <div class="card-name">${product.name}</div>
-            <div class="card-seller">By ${product.seller} • <span class="cat-label">${product.cat}</span></div>
-            <div class="card-price">${product.price}</div>
-            <button class="btn-buy" onclick="openModal('loginModal')">
-                Order Fresh
-            </button>
-        </div>
-    `,
-    )
-    .join('')
-
-  // IMPORTANT: You must call this after updating innerHTML to render the icons
-  if (window.lucide) {
-    lucide.createIcons()
-  }
-}
+https://urvincarlmontero2502.github.io/Intervia/
 
 document.addEventListener('DOMContentLoaded', loadFrontProducts)
 
