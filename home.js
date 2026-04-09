@@ -782,7 +782,7 @@ function toggleMessagePopup(event) {
     const chats = [
       { name: 'Farmer Ben', msg: 'The carrots are ready!', time: '1h', initial: 'B' },
       { name: 'Lola Eva', msg: 'Fresh ginger available.', time: '2h', initial: 'E' },
-      { name: 'CSU SITeS Members', msg: 'Meeting scheduled.', time: '3h', initial: 'C' },
+      { name: 'John Noja', msg: 'Is the Sweet Potato still available?', time: '3h', initial: 'C' },
     ]
 
     list.innerHTML = chats
